@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Make Dataset</title>
+</head>
+<style>
+    body {
+        //background-color: rgb(150, 150, 150);
+        -webkit-user-select: none;
+        color: black;
+        font-size: 16px;
+    }
+
+    button {
+        width: 100px;
+        height: 60px;
+        margin: 6px 1px 6px 1px;
+        font-size: 20px;
+        color: white;
+        background-color: rgb(51, 51, 51);
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 9px rgba(104, 104, 104, 0.5);
+    }
+
+    button:active {
+        box-shadow: 0 5px rgba(104, 104, 104, 0.5);
+        transform: translateY(4px);
+    }
+</style>
+
+<body>
+    <div>Make dataset using canvas.</div>
+    <br>
+    <div id='board' style='text-align: center; border:5px dashed #BDBDBD; width:300px; height:200px'>Drag picture here
+    </div>
+    <div id='info'>None</div>
+    <br>
+    <button onclick='prev()'>Prev</button>
+    <button onclick='next()'>Next</button>
+    <button onclick='saveImg()'>Save</button>
+    <br>
+    <br>
+    <div>
+        <canvas id='canvas'></canvas>
+        <canvas id='imgOut'>
+    </div>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
+<script>
+    window.addEventListener('keydown', function (evt) {
+        if (evt.key == 'a') prev();
+        if (evt.key == 'd') next();
+        if (evt.key == 's') saveImg();
+    }, false);
+    let files;
+    let index = 0;
+    const board = document.getElementById('board');
+    board.addEventListener('dragover', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+    });
+    board.addEventListener('dragleave', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+    });
+    board.addEventListener('drop', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        files = e.dataTransfer.files;
+        board.innerHTML = 'Added ' + files.length + ' images.';
+        showImage(files[index]);
+    });
+
+    const canvas = document.getElementById('canvas');
+    const canvasPos = canvas.getBoundingClientRect();
+    canvas.addEventListener('mousedown', down);
+    canvas.addEventListener('mouseup', up);
+    canvas.addEventListener('mousemove', move);
+    const ctx = canvas.getContext('2d');
+    const imgOut = document.getElementById('imgOut');
+    const ctxOut = imgOut.getContext('2d');
+
+    let isDown = false;
+    let startX, startY, moveX, moveY;
+    function down(evt) {
+        isDown = true;
+        ctx.drawImage(img, 0, 0);
+        try {
+            startX = Math.round(evt.touches[0].clientX - canvasPos.left);
+            startY = Math.round(evt.touches[0].clientY - canvasPos.top);
+        } catch{
+            startX = Math.round(evt.clientX - canvasPos.left);
+            startY = Math.round(evt.clientY - canvasPos.top);
+        }
+    }
+    function up(evt) {
+        isDown = false;
+        ctxOut.drawImage(img, 0, 0);
+        ctxOut.fillStyle = 'rgb(0,0,0)';
+        ctxOut.fillRect(0, 0, canvas.width, canvas.height);
+        ctxOut.fillStyle = 'rgb(255,255,255)';
+        ctxOut.fillRect(startX, startY, moveX - startX, moveY - startY);
+    }
+
+    function move(evt) {
+        if (isDown == true) {
+            try {
+                moveX = Math.round(evt.touches[0].clientX - canvasPos.left);
+                moveY = Math.round(evt.touches[0].clientY - canvasPos.top);
+            } catch{
+                moveX = Math.round(evt.clientX - canvasPos.left);
+                moveY = Math.round(evt.clientY - canvasPos.top);
+            }
+            ctx.drawImage(img, 0, 0);
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgb(0,255,0)';
+            ctx.lineWidth = 3;
+            ctx.rect(startX, startY, moveX - startX, moveY - startY);
+            ctx.stroke();
+        }
+    }
+
+    const info = document.getElementById('info');
+    let img;
+    function showImage(file) {
+        const reader = new FileReader();
+        reader.onload = file => {
+            img = new Image();
+            img.onload = () => {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                imgOut.width = img.width;
+                imgOut.height = img.height;
+                ctx.drawImage(img, 0, 0);
+            }
+            img.src = file.target.result;
+        }
+        reader.readAsDataURL(file);
+        info.innerHTML = 'File name : ' + file.name + ' (' + (index + 1) + '/' + files.length + ')';
+    }
+
+    function next() {
+        if (index < files.length - 1) {
+            index = index + 1;
+            showImage(files[index]);
+        } else {
+            alert('Last image.');
+        }
+    }
+
+    function prev() {
+        if (index > 0) {
+            index = index - 1;
+            showImage(files[index]);
+        } else {
+            alert('First image.');
+        }
+    }
+
+    function saveImg() {
+        imgOut.toBlob(blob => {
+            const fileName = files[index].name.split('.')[0] + '.png';
+            saveAs(blob, fileName);
+        });
+    }
+</script>
+
+</html>
