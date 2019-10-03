@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+    <button onclick="startPlay()">Play</button>
+    <button onclick='stopPlay()'>Stop</button>
+    <br>
+    <video id="videoInput" style="display:none"></video>
+    <canvas id="canvas" width="320" height="240">
+        <script>
+            navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+            const video = document.getElementById("videoInput");
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            const constraints = { audio: false, video: { width: { exact: canvas.width }, height: { exact: canvas.height } } };
+            
+            function successCallback(stream) {
+                video.srcObject = stream;
+                video.play();
+            }
+            function errorCallback(error) {
+                console.log(error);
+            }
+
+            let onPlay = false;
+            function startPlay() {
+                navigator.getUserMedia(constraints, successCallback, errorCallback);
+                onPlay = true;
+            }
+            function stopPlay() {
+                const tracks = video.srcObject.getTracks();
+                tracks.forEach(track => {
+                    track.stop();
+                });
+                onPlay = false;
+            }
+
+            function processVideo() {
+                if (onPlay) {
+                    ctx.drawImage(video, 0, 0);
+                }
+                setTimeout(processVideo, 0);
+            }
+            processVideo();
+        </script>
+</body>
+
+</html>
