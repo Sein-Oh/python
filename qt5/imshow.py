@@ -1,28 +1,20 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
 
 class App(QWidget):
-
     def __init__(self):
         super().__init__()
-        self.title = 'PyQt5 image - pythonspot.com'
-        self.left = 100
-        self.top = 100
-        self.width = 640
-        self.height = 480
+        self.title = 'Image Load'
         self.initUI()
     
     def initUI(self):
         self.setWindowTitle(self.title)
-        self.setGeometry(self.left, self.top, self.width, self.height)
-    
-        # Create widget
+        self.setGeometry(100, 100, 800, 600)
         label = QLabel(self)
-        pixmap = QPixmap('1.jpg')
+        pixmap = QPixmap('3.jpg')
         label.setPixmap(pixmap)
-        self.resize(pixmap.width(),pixmap.height())
-        
+        self.resize(pixmap.width(), pixmap.height())
         self.show()
 
 if __name__ == '__main__':
