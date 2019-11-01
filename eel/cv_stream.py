@@ -9,7 +9,6 @@ eel.init('web')
 
 @eel.expose
 def setup(width, height):
-    cap = cv2.VideoCapture(0)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
 
@@ -23,4 +22,5 @@ def py_send():
 
 webbrowser.open(url)
 print("Server is running on {}".format(url))
+cap = cv2.VideoCapture(0)
 eel.start(html, mode=None, port=port, host=host)
