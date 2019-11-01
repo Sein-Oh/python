@@ -5,22 +5,20 @@ port = 5000
 html = "cv_stream.html"
 url = "http://{}:{}/{}".format(host, port, html)
 
-eel.init('web')
+cap = cv2.VideoCapture(0)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+
+eel.init('web')    
 
 @eel.expose
-def setup(width, height):
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
-
-@eel.expose
-def py_send():
+def send_img():
     _, frame = cap.read()
     _, jpeg = cv2.imencode('.jpg', frame)
     jpeg_b64 = base64.b64encode(jpeg.tobytes())
     jpeg_str = jpeg_b64.decode()
-    eel.js_show(jpeg_str)
+    eel.show_img(jpeg_str)
 
 webbrowser.open(url)
 print("Server is running on {}".format(url))
-cap = cv2.VideoCapture(0)
 eel.start(html, mode=None, port=port, host=host)
