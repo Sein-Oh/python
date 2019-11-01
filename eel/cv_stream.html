@@ -1,0 +1,40 @@
+<!--videosender.html-->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Streaming from OpenCV</title>
+</head>
+<body>
+    <button onclick=start_stream()>Stream</button>
+    <button onclick=stop_stream()>Stop</button>
+    <br>
+    <img id='view'>
+</body>
+<script type="text/javascript" src="/eel.js"></script>
+<script>
+    const width = 640;
+    const height = 480;
+    eel.setup(width, height);
+
+    const view = document.getElementById('view');
+    view.width = width;
+    view.height = height;
+
+    eel.expose(js_show);
+    function js_show(data){
+        view.src = "data:image/jpeg;base64," + data;
+    }
+
+    let stream;
+    function start_stream(){
+        stream = setInterval(function(){
+            eel.py_send();
+        }, 100);
+    }
+
+    function stop_stream(){
+        clearInterval(stream);
+    }
+</script>
+
+</html>
