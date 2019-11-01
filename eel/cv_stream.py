@@ -1,18 +1,17 @@
-import sys, webbrowser, cv2, eel, base64
+import webbrowser, cv2, eel, base64
 
 host = "localhost"
 port = 5000
-html = sys.argv[0].replace("py", "html")
+html = "cv_stream.html"
 url = "http://{}:{}/{}".format(host, port, html)
 
 eel.init('web')
-cap = cv2.VideoCapture(0)
 
 @eel.expose
 def setup(width, height):
+    cap = cv2.VideoCapture(0)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
-    print("Video : {}, {}x{}".format(video_source, width, height))
 
 @eel.expose
 def py_send():
