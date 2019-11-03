@@ -35,10 +35,11 @@ class App:
     
     def mouse_down(self, evt):
         self.canvas_on_down = True
-        self.canvas_start_x, self.canvas_start_y = evt.x, evt.y
+        self.canvas_start_x, self.canvas_start_y = int(evt.x), int(evt.y)
+        self.canvas_move_x, self.canvas_move_y = int(evt.x), int(evt.y)
 
     def mouse_move(self, evt):
-        self.canvas_move_x, self.canvas_move_y = evt.x, evt.y
+        self.canvas_move_x, self.canvas_move_y = int(evt.x), int(evt.y)
 
     def mouse_up(self, evt):
         self.canvas_on_down = False
