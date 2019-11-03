@@ -4,12 +4,14 @@ from tkinter import *
 
 class App:
     def __init__(self, window):
+        self.width, self.height = 1280, 960
         self.window = window
+        self.window.geometry("640x480")
         self.window.title("Tkinter + OpenCV")
         self.cap = cv2.VideoCapture(0)
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
-        self.canvas = Canvas(window, width = self.cap.get(cv2.CAP_PROP_FRAME_WIDTH), height = self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
+        self.canvas = Canvas(window, width = self.width, height = self.height)
         self.canvas.pack()
 
         self.delay = 33
