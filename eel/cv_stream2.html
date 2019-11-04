@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Streaming from OpenCV</title>
 </head>
+
 <body>
     <button onclick="start_stream()">Start</button>
     <button onclick="stop_stream()">Stop</button>
@@ -11,17 +13,20 @@
 <script type="text/javascript" src="/eel.js"></script>
 <script>
     const view = document.getElementById('view');
-    let stream_id;
-    
-    function start_stream(){
-        eel.send_img()(data => {
-            view.src = "data:image/jpeg;base64," + data;
-        });
-        stream_id = setTimeout(start_stream, 0);
+    let stream_on = false;
+
+    function start_stream() {
+        if (stream_on === true) {
+            eel.send_img()(data => {
+                view.src = "data:image/jpeg;base64," + data;
+            });
+            setTimeout(start_stream, 0);
+        }
     }
 
-    function stop_stream(){
-        clearTimeout(stream_id);
+    function stop_stream() {
+        stream_on = true;
     }
 </script>
+
 </html>
