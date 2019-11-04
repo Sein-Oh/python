@@ -13,19 +13,24 @@
 <script type="text/javascript" src="/eel.js"></script>
 <script>
     const view = document.getElementById('view');
-    let stream_on = false;
+    let stream_on;
 
-    function start_stream() {
+    function stream() {
         if (stream_on === true) {
             eel.send_img()(data => {
                 view.src = "data:image/jpeg;base64," + data;
             });
-            setTimeout(start_stream, 0);
+            setTimeout(stream, 0);
         }
     }
 
-    function stop_stream() {
+    function start_stream(){
         stream_on = true;
+        stream();
+    }
+
+    function stop_stream() {
+        stream_on = false;
     }
 </script>
 
