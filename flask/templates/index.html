@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flask Socket.io</title>
+</head>
+<body>
+    <button onclick="btn()">Button</button>
+</body>
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" crossorigin="anonymous"></script>
+<script type="text/javascript" charset="utf-8">
+    var socket = io.connect('http://' + document.domain + ':' + location.port);
+    socket.on('connect', function () {
+        socket.emit('my event', { data: 'I\'m connected!' });
+    });
+
+    function btn(){
+        socket.emit('my event', "btn");
+    }
+</script>
+</html>
