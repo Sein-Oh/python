@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Streaming from OpenCV</title>
+</head>
+<style>
+    body {
+        -webkit-user-select: none;
+        overscroll-behavior: none;
+    }
+</style>
+
+<body>
+    <div>
+        <input type="checkbox" onclick="toggle_stream()">Camera stream
+    </div>
+    <br>
+    <div id="viewer"></div>
+</body>
+<script type="text/javascript" src="/eel.js"></script>
+<script>
+    let view_pos;
+    const viewer = document.getElementById('viewer');
+
+    function toggle_stream() {
+        eel.toggle_stream();
+    }
+
+    let img;
+    eel.expose(setup_img)
+    function setup_img(width, height) {
+        img = document.createElement("img");
+        img.addEventListener('mousedown', mousedown);
+        img.addEventListener('mousemove', mousemove);
+        img.addEventListener('mouseup', mouseup);
+        img.addEventListener('touchstart', mousedown);
+        img.addEventListener('touchmove', mousemove);
+        img.addEventListener('touchend', mouseup);
+        img.width = width;
+        img.height = height;
+        img.draggable = false;
+        viewer.appendChild(img);
+        view_pos = viewer.getBoundingClientRect();
+    }
+
+    eel.expose(js_imshow);
+    function js_imshow(imgdata) {
+        img.src = "data:image/jpeg;base64," + imgdata;
+    }
+
+    function mouse_or_touch(event) {
+        try {
+            x = Math.round(event.touches[0].clientX - view_pos.left);
+            y = Math.round(event.touches[0].clientY - view_pos.top);
+        } catch {
+            x = Math.round(event.clientX - view_pos.left);
+            y = Math.round(event.clientY - view_pos.top);
+        }
+        return [x, y];
+    }
+
+    let mouse_on_down;
+    function mousedown(event) {
+        mouse_on_down = true;
+        const pos = mouse_or_touch(event);
+        eel.mouse_handler(["mousedown", pos[0], pos[1]]);
+    }
+
+    function mousemove(event) {
+        if (mouse_on_down === true) {
+            const pos = mouse_or_touch(event);
+            eel.mouse_handler(["mousemove", pos[0], pos[1]]);
+        }
+    }
+
+    function mouseup(event) {
+        mouse_on_down = false
+        const pos = mouse_or_touch(event);
+        eel.mouse_handler(["mouseup", pos[0], pos[1]]);
+    }
+</script>
+
+</html>
