@@ -7,24 +7,28 @@ html = "index.html"
 url = "http://{}:{}/{}".format(host, port, html)
 
 streaming, tracking, tracking_first = False, False, True
-mouse_on_down, x1, y1, x2, y2 = False, None, None, None, None
+mouse_on_move, x1, y1, x2, y2 = False, None, None, None, None
 
 eel.init('web')
 @eel.expose
-def mouse_handler(evt):
-    global mouse_on_down, x1, y1, x2, y2, tracking, tracking_fitst
-    if evt[0] == "mousedown":
-        mouse_on_down = True
-        tracking = False
-        tracking_fitst = True
-        x1, y1 = evt[1], evt[2]
+def mouse_down(x, y):
+    global tracking, x1, y1
+    x1, y1 = x, y
+    tracking = False
 
-    elif evt[0] == "mouseup":
-        mouse_on_down = False
-        tracking = True
+@eel.expose
+def mouse_move(x, y):
+    global mouse_on_move, x2, y2
+    x2, y2 = x, y
+    mouse_on_move = True
 
-    x2, y2 = evt[1], evt[2]
-
+@eel.expose
+def mouse_up():
+    global mouse_on_move, tracking, tracking_first
+    mouse_on_move = False
+    tracking = True
+    tracking_first = True
+    
 @eel.expose
 def toggle_stream():
     global streaming
@@ -47,16 +51,16 @@ def imshow(frame):
     eel.js_imshow(jpeg_str)
 
 def loop():
-    global tracking_fitst
+    global tracking_first
     while True:
         ret, frame = cap.read()
-        if mouse_on_down == True and streaming == True:
+        if mouse_on_move == True and streaming == True:
             frame = cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
         
         if streaming == True:
             if tracking == True:
-                if tracking_fitst == True:
-                    tracking_fitst = False
+                if tracking_first == True:
+                    tracking_first = False
                     term_crit = ( cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 1 )
                     xmin, xmax = min(x1, x2), max(x1, x2)
                     ymin, ymax = min(y1, y2), max(y1, y2)
