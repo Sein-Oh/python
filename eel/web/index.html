@@ -64,20 +64,20 @@
     function mousedown(event) {
         mouse_on_down = true;
         const pos = mouse_or_touch(event);
-        eel.mouse_handler(["mousedown", pos[0], pos[1]]);
+        eel.mouse_down(pos[0], pos[1]);
     }
 
     function mousemove(event) {
         if (mouse_on_down === true) {
             const pos = mouse_or_touch(event);
-            eel.mouse_handler(["mousemove", pos[0], pos[1]]);
+            eel.mouse_move(pos[0], pos[1]);
         }
     }
 
     function mouseup(event) {
         mouse_on_down = false
         const pos = mouse_or_touch(event);
-        eel.mouse_handler(["mouseup", pos[0], pos[1]]);
+        eel.mouse_up();
     }
 </script>
 
