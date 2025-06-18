@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Mandloh</title>
+    <style>
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        label {
+            width: 212px;
+            margin-left: 2px;
+            display: inline-block;
+            vertical-align: 4px;
+        }
+
+        label:hover {
+            background-color: #b995e0;
+        }
+
+        input[type=checkbox] {
+            zoom: 1.5;
+            accent-color: purple;
+        }
+    </style>
+</head>
+
+<body>
+    <img id="img" style="width:250px">
+    <button style="width:250px; height:25px" onclick="pause_app()">Pause</button>
+</body>
+<script>
+    const server_url = `http://${location.host}`
+    let run
+    let pause = false
+
+    const add_slot = (key) => {
+        const container = document.createElement("div")
+        const checkbox = document.createElement("input")
+        checkbox.type = "checkbox"
+        checkbox.id = "cb_" + key
+        checkbox.onclick = () => {
+            console.log(key)
+            run[key] != run[key]
+            const res = fetch(`${server_url}/toggle/${key}`)
+        }
+        const label = document.createElement("label")
+        label.id = "lbl_" + key
+        label.htmlFor = "cb_" + key
+        label.innerText = key
+        container.appendChild(checkbox)
+        container.appendChild(label)
+        document.body.appendChild(container)
+    }
+
+    const server_sent_event = new EventSource(`${server_url}/stream`)
+    server_sent_event.addEventListener("stream", e => {
+        const data = JSON.parse(e.data)
+        document.getElementById("img").src = `data:image/png;base64,${data.imgdata.slice(2, -1)}`
+        Object.keys(data).forEach(key => {
+            if (key !== "imgdata") {
+                const info = document.getElementById(`lbl_${key}`)
+                info.innerText = `${key}: (${data[key]})`
+            }
+        })
+    })
+
+    const get_run_slots = async () => {
+        const response = await fetch(`${server_url}/get_run_slots`)
+        const data = await response.json()
+        run = data
+        Object.keys(data).forEach(key => {
+            add_slot(key)
+        })
+    }
+
+    window.onload = () => {
+        get_run_slots()
+        window.resizeTo(290, 400)
+    }
+
+    const pause_app = async () => {
+        const response = await fetch(`${server_url}/pause`)
+        pause = await response.json()
+        document.querySelectorAll("input[type='checkbox']").forEach(ele => {
+            ele.disabled = pause ? true : false
+        })
+    }
+
+</script>
+
+</html>
