@@ -1,0 +1,10 @@
+type : hp
+key : 4
+cooltime : 2
+min range : 0
+max range : 85
+x1 : 125
+y1 : 85
+x2 : 392
+y2 : 92
+threshold : 210
